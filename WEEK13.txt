@@ -1,0 +1,120 @@
+
+class Student:
+    def __init__(self, roll, name, age, course):
+        self.roll = roll
+        self.name = name
+        self.age = age
+        self.course = course
+
+    def display(self):
+        print("Roll No:", self.roll)
+        print("Name:", self.name)
+        print("Age:", self.age)
+        print("Course:", self.course)
+        print("-" * 25)
+
+
+class StudentManagement:
+    def add_student(self):
+        roll = input("Enter Roll No: ")
+
+        with open("students.txt", "a") as file:
+            for line in open("students.txt", "r"):
+                if line.startswith(roll + ","):
+                    print("Roll number already exists!")
+                    return
+
+            name = input("Enter Name: ")
+            age = input("Enter Age: ")
+            course = input("Enter Course: ")
+
+            file.write(f"{roll},{name},{age},{course}\n")
+
+        print("Student added successfully!")
+
+    def view_students(self):
+        try:
+            with open("students.txt", "r") as file:
+                found = False
+
+                for line in file:
+                    roll, name, age, course = line.strip().split(",")
+
+                    student = Student(roll, name, age, course)
+                    student.display()
+                    found = True
+
+                if not found:
+                    print("No student records found.")
+
+        except FileNotFoundError:
+            print("No student records found.")
+
+    def search_student(self):
+        roll = input("Enter Roll No to search: ")
+
+        try:
+            with open("students.txt", "r") as file:
+                for line in file:
+                    data = line.strip().split(",")
+
+                    if data[0] == roll:
+                        student = Student(*data)
+                        student.display()
+                        return
+
+            print("Student not found.")
+
+        except FileNotFoundError:
+            print("No student records found.")
+
+    def delete_student(self):
+        roll = input("Enter Roll No to delete: ")
+        found = False
+
+        try:
+            with open("students.txt", "r") as file:
+                lines = file.readlines()
+
+            with open("students.txt", "w") as file:
+                for line in lines:
+                    if line.split(",")[0] != roll:
+                        file.write(line)
+                    else:
+                        found = True
+
+            if found:
+                print("Student deleted successfully!")
+            else:
+                print("Student not found.")
+
+        except FileNotFoundError:
+            print("No student records found.")
+
+
+management = StudentManagement()
+
+while True:
+    print("\n--- Student Information Management System ---")
+    print("1. Add Student")
+    print("2. View Students")
+    print("3. Search Student")
+    print("4. Delete Student")
+    print("5. Exit")
+
+    choice = input("Enter your choice: ")
+
+    if choice == "1":
+        management.add_student()
+    elif choice == "2":
+        management.view_students()
+    elif choice == "3":
+        management.search_student()
+    elif choice == "4":
+        management.delete_student()
+    elif choice == "5":
+        print("Thank you!")
+        break
+    else:
+        print("Invalid choice!")
+
